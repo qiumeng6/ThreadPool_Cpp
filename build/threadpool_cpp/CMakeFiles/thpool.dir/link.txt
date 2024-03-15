@@ -1,1 +1,0 @@
-/usr/bin/c++ -fPIC  -std=c++14 -O2 -pthread -Wno-format-overflow -O3 -DNDEBUG -shared -Wl,-soname,libthpool.so -o libthpool.so CMakeFiles/thpool.dir/threadpool/threadpool.cpp.o 
