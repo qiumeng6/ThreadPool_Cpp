@@ -1,3 +1,12 @@
+message("******************************************************")
+message("**************  B  ***********************************")
+message("************   /  \\ **********************************")
+message("***********  A  ** D  ****** hi! THREAD POOL  ********")
+message("************   \\  / **********************************")
+message("**************  C  ***********************************")
+
+
+
 cmake_minimum_required(VERSION 3.20.0)
 
 project(ThreadPool_Cpp)
@@ -21,7 +30,7 @@ add_subdirectory(./threadpool_cpp)
 
 
 if(WITH_TEST)
-    message("*****ATTENTION! Compile with test******")
+    message("ATTENTION! Compile with test")
     add_subdirectory(./test)
 endif()
 
