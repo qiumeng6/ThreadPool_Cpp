@@ -21,6 +21,9 @@ ThreadPool::ThreadPool():done(false){
 
 ThreadPool::~ThreadPool(){
     done = true;
+    for(ThreadBase* thread : threads){
+        delete thread;
+    }
 }
 
 
