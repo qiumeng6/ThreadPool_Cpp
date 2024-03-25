@@ -19,13 +19,17 @@ ThreadPool::ThreadPool():done(false){
     }
 }
 
+// 24.03.24 解决ThreadBase忘记delete的bug
 ThreadPool::~ThreadPool(){
     done = true;
+    for(ThreadBase* thread : threads){
+        delete thread;
+    }
 }
 
 
 void ThreadPool::init(){
-    threads.reserve(config_.default_thread_size_);
+    threads.reserve(config_.default_thread_size_+1);
     for(int i = 0; i < config_.default_thread_size_; i++){
         ThreadBase* th = new ThreadBase(std::move(std::thread(&ThreadPool::run, this)));
         threads.emplace_back(th);
