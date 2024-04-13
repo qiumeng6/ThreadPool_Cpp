@@ -22,15 +22,13 @@ int main() {
     // 创建并启动指定数量的线程
     //thread threads[numtasks];
     for (int i = 0; i < numtasks; ++i) {
-        futures.emplace_back(std::async(std::launch::async, Fibonacci, i%10));
+        futures.emplace_back(std::async(std::launch::async, Fibonacci, i%10+20));
     }
     // 等待所有线程完成
     for(int i = 0; i<numtasks; i++){
-        std::cout << "thread "<< i << "is " << futures[i].get() << std::endl;  
+        //std::cout << "thread "<< i << "is " << futures[i].get() << std::endl;
+        futures[i].get();  
     }
-    // for (int i = 0; i < numtasks; ++i) {
-    //     threads[i].join();
-    // }
     auto endTime = chrono::steady_clock::now();
     cout << "Multi-threaded test took: " << chrono::duration_cast<chrono::milliseconds>(endTime - startTime).count() << " milliseconds" << endl;
     return 0;

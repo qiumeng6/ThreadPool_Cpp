@@ -10,50 +10,56 @@
 
 namespace thpool {
 
-ThreadPool::ThreadPool():done(false){
-    try{
-        init();
-    }catch(...){
-        done = true;
-        throw;
-    }
+
+ThreadPool::ThreadPool(const ThreadPoolConfig& config){
+    cur_index_ = 0;
+    is_init_ = false;
+    input_task_num_ = 0;
+    this->setConfig(config);
+    this->init();
 }
 
-// 24.03.24 解决ThreadBase忘记delete的bug
 ThreadPool::~ThreadPool(){
-    done = true;
-    for(ThreadBase* thread : threads){
-        delete thread;
+    for(ThreadPrimary* pr : primary_threads){
+        if(pr != nullptr){
+            delete pr;
+            pr = nullptr;
+        }
     }
+    primary_threads.clear();
+    is_init_ = false;
 }
 
 
 void ThreadPool::init(){
-    threads.reserve(config_.default_thread_size_+1);
+    if(is_init_){
+        THROW_EXCEPTION("The threadpool has been initialized and config do not be allowed to revise ! -->ThreadPool::init")
+    }
+    primary_threads.reserve(config_.default_thread_size_);
     for(int i = 0; i < config_.default_thread_size_; i++){
-        ThreadBase* th = new ThreadBase(std::move(std::thread(&ThreadPool::run, this)));
-        threads.emplace_back(th);
-    }
-}
-
-void ThreadPool::run(){
-    while(!done){
-        Task task;
-        if(task_queue_.try_pop(task)){
-            task();
-        }else{
-            std::this_thread::yield();
-        }
+        ThreadPrimary* th = new ThreadPrimary();
+        th->setThreadPoolInfo(i, &primary_threads, &config_);
+        th->init();
+        primary_threads.emplace_back(th);
     }
 }
 
 
-// void ThreadPool::setConfig(const ThreadPoolConfig& config){
-//     if(is_init_){
-//         THROW_EXCEPTION("The threadpool has been initialized and config do not be allowed to revise !")
-//     }
-//     this->config_ = config;
-// }
+// 当前用来分配线程号，以后改为将线程分配到不同的任务队列。
+int ThreadPool::dispatch(int origindex){
+    int realindex = 0;
+    realindex = cur_index_++;
+    return realindex;
+}
+
+
+
+void ThreadPool::setConfig(const ThreadPoolConfig& config){
+    if(is_init_){
+        THROW_EXCEPTION("The threadpool has been initialized and config do not be allowed to revise !-->ThreadPool::setConfig")
+    }
+    this->config_ = config;
+}
 
 
 } //thpool

@@ -6,8 +6,7 @@
 namespace thpool {
 
 struct ThreadPoolConfig {
-    int default_thread_size_ = DEFAULT_THREAD_SIZE;
-
+    int default_thread_size_ = DEFAULT_THREAD_SIZE + 1;
 };
 
 } // thpool
