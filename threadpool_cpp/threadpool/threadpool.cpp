@@ -12,15 +12,15 @@ namespace thpool {
 
 
 ThreadPool::ThreadPool(const ThreadPoolConfig& config){
-    cur_index_ = 0;
+    //cur_index_ = 0;
     is_init_ = false;
-    input_task_num_ = 0;
+    //input_task_num_ = 0;
     this->setConfig(config);
     this->init();
 }
 
 ThreadPool::~ThreadPool(){
-    for(ThreadPrimary* pr : primary_threads){
+    for(ThreadPrimary*& pr : primary_threads){
         if(pr != nullptr){
             delete pr;
             pr = nullptr;
@@ -46,11 +46,11 @@ void ThreadPool::init(){
 
 
 // 当前用来分配线程号，以后改为将线程分配到不同的任务队列。
-int ThreadPool::dispatch(int origindex){
-    int realindex = 0;
-    realindex = cur_index_++;
-    return realindex;
-}
+// int ThreadPool::dispatch(int origindex){
+//     int realindex = 0;
+//     realindex = cur_index_++;
+//     return realindex;
+// }
 
 
 

@@ -30,36 +30,33 @@ class ThreadLocalQueue : public QueueBase{
 public:
     ThreadLocalQueue() = default;
 
-    void push(Task&& task) {
-        while (true) {
-            if (mutex_.try_lock()) {
-                queue_.push(std::move(task));
-                mutex_.unlock();
-                break;
-            } else {
-                std::this_thread::yield();
-            }
+    bool try_push(Task&& task) {
+        bool result = false;
+        if (mutex_.try_lock()) {
+            deque_.emplace_back(std::forward<Task>(task));
+            mutex_.unlock();
+            result = true;
         }
+        return result;
     }
 
     bool try_pop(Task& task) {
         // 这里不使用raii锁，主要是考虑到多线程的情况下，可能会重复进入
         bool result = false;
         // print_thread_id();
-        if (mutex_.try_lock()) {
-            if (!queue_.empty()) {
-                task = std::move(queue_.front());    // 从前方弹出
-                queue_.pop();
+        if (!deque_.empty() && mutex_.try_lock()) {
+            if (!deque_.empty()) {
+                task = std::move(deque_.front());    // 从前方弹出
+                deque_.pop_front();
                 result = true;
             }
             mutex_.unlock();
         }
-
         return result;
     }
 
 private:
-    std::queue<Task> queue_;
+    std::deque<Task> deque_;
 };
 
 

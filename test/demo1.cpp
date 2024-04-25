@@ -22,7 +22,7 @@ int main() {
     // 创建并启动指定数量的线程
     //thread threads[numtasks];
     for (int i = 0; i < numtasks; ++i) {
-        futures.emplace_back(std::async(std::launch::async, Fibonacci, i%10+20));
+        futures.emplace_back(std::async(std::launch::async, Fibonacci, i%10));
     }
     // 等待所有线程完成
     for(int i = 0; i<numtasks; i++){
